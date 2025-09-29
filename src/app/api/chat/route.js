@@ -4,26 +4,8 @@ export async function POST(request) {
   try {
     const { message } = await request.json()
 
-    if (!message) {
-      return NextResponse.json({ error: 'กรุณาใส่ข้อความ' }, { status: 400 })
-    }
-
     // ตรวจสอบ API key
-    const apiKey = process.env.OPENAI_API_KEY || process.env.GEMINI_API_KEY
-    
-    if (!apiKey) {
-      return NextResponse.json({ 
-        error: 'ไม่พบ API Key - กรุณาสร้างไฟล์ .env.local และใส่ OPENAI_API_KEY=your-key' 
-      }, { status: 500 })
-    }
-
-    // Mock response สำหรับทดสอบ (ลบออกเมื่อมี API key จริง)
-    if (apiKey === 'test' || apiKey.startsWith('test-')) {
-      await new Promise(resolve => setTimeout(resolve, 1000)) // จำลองการรอ
-      return NextResponse.json({
-        reply: `🤖 คุณถาม: "${message}"\n\nนี่คือการตอบกลับแบบทดสอบ กรุณาใส่ API Key จริงใน .env.local เพื่อใช้งาน AI จริง`
-      })
-    }
+    const apiKey = process.env.OPENAI_API_KEY
 
     // เรียก OpenAI API
     if (process.env.OPENAI_API_KEY) {
