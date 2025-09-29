@@ -74,12 +74,12 @@ export default function App() {
         </div>
 
         {/* CTA Button */}
-        <button 
-          onClick={() => setCurrentPage('try')}
-          className="px-10 py-4 bg-white text-gray-900 rounded-full text-lg font-semibold hover:bg-gray-100 hover:shadow-2xl transition-all transform hover:scale-105"
+        <a 
+          href="@/chat"
+          className="inline-block px-10 py-4 bg-white text-gray-900 rounded-full text-lg font-semibold hover:bg-gray-100 hover:shadow-2xl transition-all transform hover:scale-105"
         >
           Try it now
-        </button>
+        </a>
       </main>
     </div>
   );
