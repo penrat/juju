@@ -1,5 +1,6 @@
 "use client"
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -73,9 +74,8 @@ export default function App() {
           </button>
         </div>
 
-        {/* CTA Button */}
         <a 
-          href="@/chat"
+          href="/chat"
           className="inline-block px-10 py-4 bg-white text-gray-900 rounded-full text-lg font-semibold hover:bg-gray-100 hover:shadow-2xl transition-all transform hover:scale-105"
         >
           Try it now
@@ -84,3 +84,4 @@ export default function App() {
     </div>
   );
 }
+
