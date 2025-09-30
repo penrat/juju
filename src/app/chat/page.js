@@ -8,6 +8,9 @@ export default function SojuAIChat() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const fileInputRef = useRef(null);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -18,22 +21,74 @@ export default function SojuAIChat() {
     scrollToBottom();
   }, [messages]);
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      
+      // Create preview for images
+      if (file.type.startsWith('image/')) {
+        const url = URL.createObjectURL(file);
+        setPreviewUrl(url);
+      } else {
+        setPreviewUrl(null);
+      }
+    }
+  };
+
+  const removeFile = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleSubmit = async () => {
-    if (!input.trim() || loading) return;
+    if ((!input.trim() && !selectedFile) || loading) return;
 
     const userMessage = input.trim();
+    const userFile = selectedFile;
+    
     setInput('');
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
     setLoading(true);
 
     // เพิ่มข้อความผู้ใช้
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    let messageContent = userMessage;
+    if (userFile) {
+      messageContent += userFile.name ? ` [ไฟล์: ${userFile.name}]` : ' [ไฟล์]';
+    }
+    
+    setMessages(prev => [...prev, { role: 'user', content: messageContent, file: userFile }]);
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage }),
-      });
+      let response;
+      
+      if (userFile) {
+        // Handle file upload
+        const formData = new FormData();
+        formData.append('file', userFile);
+        if (userMessage) {
+          formData.append('message', userMessage);
+        }
+        
+        response = await fetch('/api/chat', {
+          method: 'POST',
+          body: formData,
+        });
+      } else {
+        // Handle regular text message
+        response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: userMessage }),
+        });
+      }
 
       const data = await response.json();
 
@@ -66,6 +121,11 @@ export default function SojuAIChat() {
   const handleNewChat = () => {
     setMessages([]);
     setInput('');
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   return (
@@ -174,6 +234,15 @@ export default function SojuAIChat() {
                     }`}
                   >
                     <p className="whitespace-pre-wrap">{msg.content}</p>
+                    {msg.file && msg.file.type.startsWith('image/') && (
+                      <div className="mt-2">
+                        <img 
+                          src={URL.createObjectURL(msg.file)} 
+                          alt="Uploaded" 
+                          className="max-w-full max-h-48 rounded-lg"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -194,6 +263,37 @@ export default function SojuAIChat() {
           )}
         </div>
 
+        {/* File Preview Area */}
+        {selectedFile && (
+          <div className="px-4 pb-2">
+            <div className="max-w-3xl mx-auto">
+              <div className="bg-zinc-800 rounded-lg border border-zinc-700 p-3 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-zinc-700 rounded-lg flex items-center justify-center">
+                    {previewUrl ? (
+                      <img src={previewUrl} alt="Preview" className="w-full h-full object-cover rounded-lg" />
+                    ) : (
+                      <Paperclip size={20} className="text-zinc-400" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-zinc-100">{selectedFile.name}</p>
+                    <p className="text-xs text-zinc-400">{(selectedFile.size / 1024).toFixed(1)} KB</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={removeFile}
+                  className="text-zinc-400 hover:text-white p-1"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Input Area */}
         <div className="p-4 border-t border-zinc-800">
           <div className="max-w-3xl mx-auto">
@@ -202,6 +302,7 @@ export default function SojuAIChat() {
                 <button 
                   type="button"
                   className="p-2 hover:bg-zinc-700 rounded-lg transition"
+                  onClick={() => fileInputRef.current?.click()}
                 >
                   <Plus size={20} className="text-zinc-400" />
                 </button>
@@ -216,7 +317,7 @@ export default function SojuAIChat() {
                 />
                 <button 
                   onClick={handleSubmit}
-                  disabled={loading || !input.trim()}
+                  disabled={loading || (!input.trim() && !selectedFile)}
                   className="p-2 hover:bg-zinc-600 rounded-lg transition bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Send size={18} className="text-white" />
@@ -230,9 +331,17 @@ export default function SojuAIChat() {
                 <button 
                   type="button"
                   className="p-2 hover:bg-zinc-700 rounded-lg transition"
+                  onClick={() => fileInputRef.current?.click()}
                 >
                   <Paperclip size={18} className="text-zinc-400" />
                 </button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  accept="*/*"
+                />
               </div>
             </div>
           </div>
