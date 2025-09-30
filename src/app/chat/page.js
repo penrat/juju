@@ -25,7 +25,7 @@ export default function SojuAIChat() {
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(file);
-      
+
       // Create preview for images
       if (file.type.startsWith('image/')) {
         const url = URL.createObjectURL(file);
@@ -49,7 +49,7 @@ export default function SojuAIChat() {
 
     const userMessage = input.trim();
     const userFile = selectedFile;
-    
+
     setInput('');
     setSelectedFile(null);
     setPreviewUrl(null);
@@ -63,12 +63,12 @@ export default function SojuAIChat() {
     if (userFile) {
       messageContent += userFile.name ? ` [ไฟล์: ${userFile.name}]` : ' [ไฟล์]';
     }
-    
+
     setMessages(prev => [...prev, { role: 'user', content: messageContent, file: userFile }]);
 
     try {
       let response;
-      
+
       if (userFile) {
         // Handle file upload
         const formData = new FormData();
@@ -76,7 +76,7 @@ export default function SojuAIChat() {
         if (userMessage) {
           formData.append('message', userMessage);
         }
-        
+
         response = await fetch('/api/chat', {
           method: 'POST',
           body: formData,
@@ -96,15 +96,20 @@ export default function SojuAIChat() {
         throw new Error(data.error || 'เกิดข้อผิดพลาด');
       }
 
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: data.reply || data.message
-      }]);
+      setMessages(prev => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: data.reply || data.message,
+          imageUrl: data.imageUrl || null
+        }
+      ]);
+
 
     } catch (error) {
-      setMessages(prev => [...prev, { 
-        role: 'error', 
-        content: '❌ ' + error.message 
+      setMessages(prev => [...prev, {
+        role: 'error',
+        content: '❌ ' + error.message
       }]);
     } finally {
       setLoading(false);
@@ -140,7 +145,7 @@ export default function SojuAIChat() {
             </div>
             <h1 className="text-lg font-semibold">SOJU AI</h1>
           </div>
- 
+
           {/* Menu Icons */}
           <div className="p-3 border-b border-zinc-700">
             <div className="flex items-center justify-between mb-3">
@@ -159,7 +164,7 @@ export default function SojuAIChat() {
 
             {/* Menu Items */}
             <div className="space-y-1">
-              <button 
+              <button
                 onClick={handleNewChat}
                 className="flex items-center gap-3 w-full p-2 hover:bg-zinc-700 rounded text-sm"
               >
@@ -200,7 +205,7 @@ export default function SojuAIChat() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col relative">
         {/* Toggle Sidebar Button */}
-        <button 
+        <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="absolute top-4 left-4 p-2 hover:bg-zinc-800 rounded z-10"
         >
@@ -225,28 +230,37 @@ export default function SojuAIChat() {
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                      msg.role === 'user'
-                        ? 'bg-blue-600 text-white'
-                        : msg.role === 'error'
+                    className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.role === 'user'
+                      ? 'bg-blue-600 text-white'
+                      : msg.role === 'error'
                         ? 'bg-red-900 text-red-200'
                         : 'bg-zinc-800 text-zinc-100'
-                    }`}
+                      }`}
                   >
                     <p className="whitespace-pre-wrap">{msg.content}</p>
                     {msg.file && msg.file.type.startsWith('image/') && (
                       <div className="mt-2">
-                        <img 
-                          src={URL.createObjectURL(msg.file)} 
-                          alt="Uploaded" 
+                        <img
+                          src={URL.createObjectURL(msg.file)}
+                          alt="Uploaded"
                           className="max-w-full max-h-48 rounded-lg"
                         />
                       </div>
                     )}
+                    {msg.imageUrl && (
+                      <div className="mt-2">
+                        <img
+                          src={msg.imageUrl}
+                          alt="AI Generated"
+                          className="max-w-full max-h-64 rounded-lg shadow-lg"
+                        />
+                      </div>
+                    )}
+
                   </div>
                 </div>
               ))}
-              
+
               {loading && (
                 <div className="flex justify-start">
                   <div className="bg-zinc-800 text-zinc-100 rounded-2xl px-4 py-3">
@@ -281,7 +295,7 @@ export default function SojuAIChat() {
                     <p className="text-xs text-zinc-400">{(selectedFile.size / 1024).toFixed(1)} KB</p>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={removeFile}
                   className="text-zinc-400 hover:text-white p-1"
                 >
@@ -299,7 +313,7 @@ export default function SojuAIChat() {
           <div className="max-w-3xl mx-auto">
             <div className="bg-zinc-800 rounded-2xl border border-zinc-700 shadow-xl">
               <div className="flex items-center gap-2 p-3">
-                <button 
+                <button
                   type="button"
                   className="p-2 hover:bg-zinc-700 rounded-lg transition"
                   onClick={() => fileInputRef.current?.click()}
@@ -315,20 +329,20 @@ export default function SojuAIChat() {
                   disabled={loading}
                   className="flex-1 bg-transparent outline-none text-zinc-300 placeholder-zinc-500 disabled:opacity-50"
                 />
-                <button 
+                <button
                   onClick={handleSubmit}
                   disabled={loading || (!input.trim() && !selectedFile)}
                   className="p-2 hover:bg-zinc-600 rounded-lg transition bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Send size={18} className="text-white" />
                 </button>
-                <button 
+                <button
                   type="button"
                   className="p-2 hover:bg-zinc-700 rounded-lg transition"
                 >
                   <Mic size={18} className="text-zinc-400" />
                 </button>
-                <button 
+                <button
                   type="button"
                   className="p-2 hover:bg-zinc-700 rounded-lg transition"
                   onClick={() => fileInputRef.current?.click()}

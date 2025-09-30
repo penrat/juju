@@ -2,43 +2,102 @@ import { NextResponse } from 'next/server'
 
 export async function POST(request) {
   try {
-    const { message } = await request.json()
+    let message = "";
+    let imageBase64 = null;
 
-    // ตรวจสอบ API key
-    const apiKey = process.env.OPENAI_API_KEY
+    const contentType = request.headers.get("content-type") || "";
 
-    // เรียก OpenAI API
-    if (process.env.OPENAI_API_KEY) {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [{ role: 'user', content: message }],
-          max_tokens: 300,
-        }),
-      })
+    if (contentType.includes("multipart/form-data")) {
+      // 📌 รับ FormData
+      const formData = await request.formData();
+      message = formData.get("message") || "";
 
-      if (!response.ok) {
-        const error = await response.json()
-        return NextResponse.json({ 
-          error: 'OpenAI API Error: ' + (error.error?.message || response.statusText)
-        }, { status: response.status })
+      const file = formData.get("file");
+      if (file && file.type.startsWith("image/")) {
+        const buffer = Buffer.from(await file.arrayBuffer());
+        imageBase64 = `data:${file.type};base64,${buffer.toString("base64")}`;
       }
-
-      const data = await response.json()
-      return NextResponse.json({ reply: data.choices[0].message.content })
+    } else {
+      const body = await request.json();
+      message = body.message || "";
     }
 
-    return NextResponse.json({ error: 'ไม่รองรับ API provider นี้' }, { status: 400 })
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json({ error: "Missing OpenAI API key" }, { status: 400 });
+    }
+
+    // 🖼️ ถ้า user พิมพ์ว่า "สร้างรูป..." → เรียก image generation
+    if (message.toLowerCase().startsWith("สร้างรูป")) {
+      const prompt = message.replace("สร้างรูป", "").trim() || "a cute cat";
+      
+      const response = await fetch("https://api.openai.com/v1/images/generations", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-image-1", // ✅ ใช้สำหรับสร้างภาพ
+          prompt,
+          size: "auto",
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        return NextResponse.json(
+          { error: error.error?.message || "Image API Error" },
+          { status: response.status }
+        );
+      }
+
+      const data = await response.json();
+      console.log("Image API response:", data);
+      return NextResponse.json({ 
+        reply: `สร้างรูปเสร็จแล้ว 🎨`, 
+        imageUrl: data.data[0].url 
+      });
+    }
+
+    // 🤖 ปกติ (ข้อความ + อาจมีภาพที่อัปโหลดมา)
+    const payload = {
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: message || "อธิบายภาพนี้ให้หน่อย" },
+            ...(imageBase64
+              ? [{ type: "image_url", image_url: { url: imageBase64 } }]
+              : []),
+          ],
+        },
+      ],
+      max_tokens: 500,
+    };
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      return NextResponse.json(
+        { error: error.error?.message || "Chat API Error" },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
+    return NextResponse.json({ reply: data.choices[0].message.content });
 
   } catch (error) {
-    console.error('API Error:', error)
-    return NextResponse.json({ 
-      error: 'เกิดข้อผิดพลาด: ' + error.message 
-    }, { status: 500 })
+    console.error("API Error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
