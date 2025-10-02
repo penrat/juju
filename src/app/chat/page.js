@@ -160,7 +160,7 @@ export default function SojuAIChat() {
           inputBg: 'bg-gray-800',
           buttonHover: 'hover:bg-gray-800',
           messageUserBg: 'bg-blue-600',
-          messageAssistantBg: 'bg-gray-800',
+          messageAssistantBg: 'bg-gray-500',
           messageErrorBg: 'bg-red-900',
         };
       case 'gray':
@@ -334,11 +334,7 @@ export default function SojuAIChat() {
               {loading && (
                 <div className="flex justify-start">
                   <div className={`${themeClasses.messageAssistantBg} text-gray-100 rounded-2xl px-4 py-3`}>
-                    <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-                    </div>
+                    <p className="whitespace-pre-wrap">โซจูกำลังพิมพ์....</p>
                   </div>
                 </div>
               )}

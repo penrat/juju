@@ -10,10 +10,10 @@ export default function ThemeSelector({ compact = false }) {
   const dropdownRef = useRef(null);
 
   const themes = [
-    { id: 'black', name: 'Black', color: 'bg-black border-gray-800', emoji: '🐈‍⬛' },
-    { id: 'white', name: 'White', color: 'bg-white border-gray-300', emoji: '🐱' },
-    { id: 'gray', name: 'Gray', color: 'bg-gray-300 border-gray-400', emoji: '🐈' },
-    { id: 'orange', name: 'Orange', color: 'bg-orange-200 border-orange-300', emoji: '🦊' },
+    { id: 'black', name: 'Black', color: 'bg-black border-gray-800', image: '/img/black.png' },
+    { id: 'white', name: 'White', color: 'bg-white border-gray-300', image: '/img/white.png' },
+    { id: 'gray', name: 'Gray', color: 'bg-gray-300 border-gray-400', image: '/img/gray.png' },
+    { id: 'orange', name: 'Orange', color: 'bg-orange-200 border-orange-300', image: '/img/orange.png' },
   ];
 
   // Close dropdown when clicking outside
@@ -83,7 +83,11 @@ export default function ThemeSelector({ compact = false }) {
                   } ${t.color}`}
                   aria-label={`Select ${t.name} theme`}
                 >
-                  {t.emoji}
+                  {t.image ? (
+                    <img src={t.image} alt={t.name} className="w-6 h-6 object-cover rounded" />
+                  ) : (
+                    t.emoji
+                  )}
                 </button>
               ))}
             </div>
@@ -120,7 +124,11 @@ export default function ThemeSelector({ compact = false }) {
                 } ${t.color}`}
                 aria-label={`Select ${t.name} theme`}
               >
-                {t.emoji}
+                {t.image ? (
+                  <img src={t.image} alt={t.name} className="w-6 h-6 object-cover rounded" />
+                ) : (
+                  t.emoji
+                )}
               </button>
             ))}
           </div>

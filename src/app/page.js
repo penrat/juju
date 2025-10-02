@@ -18,7 +18,7 @@ export default function App() {
           buttonBg: 'bg-gray-900',
           buttonText: 'text-white',
           buttonHover: 'hover:bg-gray-800',
-          heroGradient: 'from-gray-100 via-gray-50 to-gray-100'
+          heroGradient: 'bg-white'
         };
       case 'black':
         return {
@@ -38,7 +38,7 @@ export default function App() {
           buttonBg: 'bg-gray-800',
           buttonText: 'text-white',
           buttonHover: 'hover:bg-gray-700',
-          heroGradient: 'from-gray-500 via-gray-400 to-gray-500'
+          heroGradient: 'bg-gray-400'
         };
       case 'orange':
         return {
@@ -48,7 +48,7 @@ export default function App() {
           buttonBg: 'bg-orange-700',
           buttonText: 'text-white',
           buttonHover: 'hover:bg-orange-600',
-          heroGradient: 'from-orange-300 via-orange-200 to-orange-300'
+          heroGradient: 'bg-orange-200'
         };
       default: // default dark theme
         return {

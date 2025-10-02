@@ -1,4 +1,4 @@
-// File: C:\Users\Admin\OneDrive\Desktop\project-soju\api_openai\src\app\layout.js
+// File: C:\Users\Msi Thin15\Downloads\JU\project-soju\src\app\layout.js
 import * as entry from '../../../src/app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
