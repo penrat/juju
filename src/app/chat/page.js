@@ -334,7 +334,7 @@ export default function SojuAIChat() {
               {loading && (
                 <div className="flex justify-start">
                   <div className={`${themeClasses.messageAssistantBg} text-gray-100 rounded-2xl px-4 py-3`}>
-                    <p className="whitespace-pre-wrap">โซจูกำลังพิมพ์....</p>
+                    <p className="whitespace-pre-wrap">โซจูกำลังพิมพ์...</p>
                   </div>
                 </div>
               )}
