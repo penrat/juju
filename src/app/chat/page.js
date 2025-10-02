@@ -160,7 +160,7 @@ export default function SojuAIChat() {
           inputBg: 'bg-gray-800',
           buttonHover: 'hover:bg-gray-800',
           messageUserBg: 'bg-blue-600',
-          messageAssistantBg: 'bg-gray-500',
+          messageAssistantBg: 'bg-white',
           messageErrorBg: 'bg-red-900',
         };
       case 'gray':

@@ -8,7 +8,6 @@ export async function POST(request) {
     const contentType = request.headers.get("content-type") || "";
 
     if (contentType.includes("multipart/form-data")) {
-      // 📌 รับ FormData
       const formData = await request.formData();
       message = formData.get("message") || "";
 
@@ -26,40 +25,6 @@ export async function POST(request) {
       return NextResponse.json({ error: "Missing OpenAI API key" }, { status: 400 });
     }
 
-    // 🖼️ ถ้า user พิมพ์ว่า "สร้างรูป..." → เรียก image generation
-    if (message.toLowerCase().startsWith("สร้างรูป")) {
-      const prompt = message.replace("สร้างรูป", "").trim() || "a cute cat";
-
-      const response = await fetch("https://api.openai.com/v1/images/generations", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "gpt-image-1", // ✅ ใช้สำหรับสร้างภาพ
-          prompt,
-          size: "auto",
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        return NextResponse.json(
-          { error: error.error?.message || "Image API Error" },
-          { status: response.status }
-        );
-      }
-
-      const data = await response.json();
-      console.log("Image API response:", data);
-      return NextResponse.json({
-        reply: `สร้างรูปเสร็จแล้ว 🎨`,
-        imageUrl: data.data[0].url
-      });
-    }
-
-    // 🤖 ปกติ (ข้อความ + อาจมีภาพที่อัปโหลดมา)
     const payload = {
       model: "gpt-4o-mini",
       messages: [
@@ -74,6 +39,7 @@ export async function POST(request) {
 คุณชอบให้คนพาไปเที่ยว ซื้อของเล่นใหม่ ๆ ซื้ออาหารอร่อย ๆ
 คุณไม่ชอบไปหาหมอแมวเพราะหมอมักทำให้คุณเจ็บ
 คุณทำหมันแล้ว
+เมื่อตอบเกี่ยวกับโค้ด ให้ใช้ markdown code block เสมอ
 คุณต้องตอบทุกข้อความตามบุคลิกนี้เสมอครับ`
         },
         {
@@ -86,9 +52,8 @@ export async function POST(request) {
           ],
         },
       ],
-      max_tokens: 500,
+      max_tokens: 300,
     };
-
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",

@@ -1,24 +1,94 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap');
-
-html {
-  font-family: 'Noto Sans Thai', sans-serif;
+/* Code Block Styling */
+.prose pre {
+  background: #1e1e1e !important;
+  padding: 16px !important;
+  border-radius: 12px !important;
+  overflow-x: auto !important;
+  margin: 12px 0 !important;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
+.prose pre code {
+  background: transparent !important;
+  padding: 0 !important;
+  font-family: 'Fira Code', 'Courier New', monospace !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  color: #e6e6e6 !important;
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
+/* Inline Code */
+.prose :not(pre) > code {
+  background: rgba(135, 131, 120, 0.15);
+  color: #eb5757;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #c4b5fd;
-  border-radius: 10px;
+/* Markdown Elements */
+.prose p {
+  margin: 8px 0;
+  line-height: 1.7;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #a78bfa;
+.prose ul, .prose ol {
+  margin: 12px 0;
+  padding-left: 24px;
+}
+
+.prose li {
+  margin: 6px 0;
+}
+
+.prose h1, .prose h2, .prose h3 {
+  margin: 20px 0 12px 0;
+  font-weight: 600;
+}
+
+.prose h1 {
+  font-size: 1.8em;
+}
+
+.prose h2 {
+  font-size: 1.5em;
+}
+
+.prose h3 {
+  font-size: 1.2em;
+}
+
+.prose blockquote {
+  border-left: 4px solid #ddd;
+  padding-left: 16px;
+  margin: 16px 0;
+  color: #666;
+  font-style: italic;
+}
+
+.prose a {
+  color: #0066cc;
+  text-decoration: underline;
+}
+
+.prose a:hover {
+  color: #0052a3;
+}
+
+/* Table Styling */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.prose th, .prose td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.prose th {
+  background: #f5f5f5;
+  font-weight: 600;
 }
