@@ -165,7 +165,7 @@ export default function SojuAIChat() {
         };
       case 'gray':
         return {
-          bg: 'bg-gray-400',
+          bg: 'bg-gradient-to-br from-gray-900 via-gray-500 to-gray-900 ',
           text: 'text-gray-900',
           sidebarBg: 'bg-gray-500',
           border: 'border-gray-600',

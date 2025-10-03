@@ -231,7 +231,7 @@ export default function App() {
             { name: "กุริญา ทาเทร์", role: "แอดมินกลุ่มนินทาอาจารย์สาขาวิทยาการคอมพิวเตอร์", Image: "/img/ying.png" },
             { name: "ณรงค์พล ชูหนู", role: "เชื่อมAPI กับเว็ป", Image: "/img/arm.png" },
             { name: "วรรณภา ฉัตรทอง", role: "นักตกแต่ง tailwindcss", Image: "/img/B.jpg" },
-            { name: "เกรซ", role: "นักออกแบบ Figma", Image: null },
+            { name: "ณัฐธภา ยงศิลป์วิริยะกุล", role: "นักออกแบบ Figma", Image: "/img/graz.jpg" },
             { name: "เพ็ญรัศมิ์ เฮงเริศรัตน", role: "ฝ่ายเนื้อหา", Image: "/img/yok.png" },
             { name: "หลวงปู่เอิร์ธ เชิญยิ้ม", role: "ผู้ให้พร", Image: "/img/earth.jpg" },
             { name: "อ.อรรถวิท ชังคมานน", role: "ศิลปินผู้ก่อตั้งวง sajaboys", Image: "/img/T.jo.png" }
