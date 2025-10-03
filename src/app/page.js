@@ -256,7 +256,7 @@ export default function App() {
         </div>
       </section>
     </div>
-  );
+  
 
 
       <section className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20">
